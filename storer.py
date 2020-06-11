@@ -19,7 +19,8 @@ month_to_id = {'ΙΑΝ': '01',
             }
 
 
-def save_to_db_and_csv(xls_dir = 'xls_files/', csv_dir = 'csv_files/', sql_dir = '', sql_name = 'db'):
+def save_to_db_and_csv(xls_dir = 'xls_files/', csv_dir = 'csv_files/',
+                            sql_dir = '', sql_name = 'db'):
 
     # create save folder if it doesn't exist
     os.makedirs(os.path.dirname(csv_dir), exist_ok=True)
@@ -30,11 +31,13 @@ def save_to_db_and_csv(xls_dir = 'xls_files/', csv_dir = 'csv_files/', sql_dir =
     for name in [str(i) for i in range(2011, 2016)]:
         
         # dict of DataFrames
-        dfs = pd.read_excel(os.path.join(xls_dir, name + '.xls'), sheet_name=None)
+        dfs = pd.read_excel(os.path.join(xls_dir, name + '.xls'), 
+                                sheet_name=None)
 
         for table, df in dfs.items():
             
-            df.columns = ['id', 'ΧΩΡΑ', 'ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ', 'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']
+            df.columns = ['id', 'ΧΩΡΑ', 'ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ',
+                            'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']
             
             # filter (id collumn) -> number followed by a dot
             df = df[df.id.str.contains('^\d+\.$', na=False)]
@@ -54,13 +57,16 @@ def save_to_db_and_csv(xls_dir = 'xls_files/', csv_dir = 'csv_files/', sql_dir =
             # keep only the first table
             df = df.drop_duplicates(subset=['ΧΩΡΑ'], keep='first')
 
-            for collumn in ['ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ', 'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']:
+            for collumn in ['ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ',
+                                'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']:
                 df[collumn] = df[collumn].round()
                 df[collumn] = df[collumn].astype(int)
             # print(df)
 
-            df.to_sql(name + '-' + month_to_id[table], db, if_exists='replace', index=False)
-            df.to_csv(os.path.join(csv_dir, name + '-' + month_to_id[table] + '.csv'), index=False)
+            df.to_sql(name + '-' + month_to_id[table], db,
+                        if_exists='replace', index=False)
+            df.to_csv(os.path.join(csv_dir, 
+                        name + '-' + month_to_id[table] + '.csv'), index=False)
     
     print('Data are now in a safe place!')
 

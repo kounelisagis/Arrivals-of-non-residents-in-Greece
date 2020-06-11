@@ -58,7 +58,8 @@ def per_quarter(dfs, charts_dir='charts/', picture_name='per_quarter'):
 
     for year, months in dfs.items():
         for quarter in range(1,5):
-            df = pd.concat([months[month] for month in range(3*quarter - 2, 3*quarter + 1)], ignore_index=True)
+            df = pd.concat([months[month] for month in
+                                range(3*quarter - 2, 3*quarter + 1)], ignore_index=True)
             df = df.sum()
             quarters.append(('{}-Q{}'.format(year, quarter), df['ΣΥΝΟΛΟ']))
 
@@ -90,6 +91,10 @@ def per_transport(dfs, charts_dir='charts/', picture_name='per_transport'):
     ax.set_yscale('log')
 
 
+    plt.title('Αφίξεις ανά Μέσο Μεταφοράς')
+    plt.ylabel('Αφίξεις')
+
+
     os.makedirs(os.path.dirname(charts_dir), exist_ok=True)
     plt.savefig(os.path.join(charts_dir, picture_name), bbox_inches='tight', dpi=100)
     plt.show()
@@ -101,7 +106,8 @@ def per_country(dfs, top_n=10, charts_dir='charts/', picture_name='per_country')
     df = pd.concat(dfs, ignore_index=True)
 
     # group by country and sum the other columns
-    df = df.groupby(['ΧΩΡΑ'], as_index=False)[['ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ', 'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']].sum()
+    df = df.groupby(['ΧΩΡΑ'], as_index=False)[
+        ['ΑΕΡΟΠΟΡΙΚΩΣ', 'ΣΙΔ/ΚΩΣ', 'ΘΑΛΑΣΣΙΩΣ', 'ΟΔΙΚΩΣ', 'ΣΥΝΟΛΟ']].sum()
     df = df.sort_values('ΣΥΝΟΛΟ', ascending=False).head(10)
 
     x = df['ΧΩΡΑ']
@@ -120,7 +126,8 @@ def per_country(dfs, top_n=10, charts_dir='charts/', picture_name='per_country')
 if __name__ == '__main__':
 
     dfs_dict = get_dataframes_dict()
-    plain_dfs = [month_df for months_dict in dfs_dict.values() for month_df in list(months_dict.values())]
+    plain_dfs = [month_df for months_dict in dfs_dict.values()
+                    for month_df in list(months_dict.values())]
 
     per_year(dfs_dict)
     per_country(plain_dfs)
